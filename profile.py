@@ -4,13 +4,11 @@ Resource provisioning script for mMIMO experiments on the POWDER test-bed for Pr
 Instructions:
 The Faros hub and pc are connected via a private 10Gbps link.
 All Iris radios and the Faros hub should come up with address between 192.168.1.101 and 192.168.1.200.
-These addresses are reachable by first logging in to "pc".
+These addresses are reachable by first logging in to "pc1".
 
 Repository: https://gitlab.flux.utah.edu/kwebb/faros-simple.git
 
-Author: Bharath Keshavamurthy
-Organization: School of Electrical & Computer Engineering, Purdue University, West Lafayette, IN.
-Copyright (c) 2021. All Rights Reserved.
+Cloned Repository: https://github.com/bharathkeshavamurthy/bifrost-mMIMO.git
 """
 
 # The imports
@@ -59,8 +57,9 @@ context.verifyParameters()
 request = portal.context.makeRequestRSpec()
 
 # Request a compute node from the specified cluster, name it "pc", load the default os image onto it, execute
-#   Faros startup operations, and create & assign a 40Gbps interface for connection to the aggregation hub
-# faros_start.sh: DHCP daemon configuration; Git submodules update; and Install SoapySDR, Python libs, and C libs.
+#   Faros startup operations, and create & assign a 40Gbps interface for the LAN connection (remoting & data collection)
+# faros_start.sh: DHCP daemon configuration; Git submodules update; and Install SoapySDR, Python libs, and C libs
+# Note that there is a private 10Gbps link between the Faros aggregation hub and this PC
 pc = request.RawPC('pc')
 pc.hardware_type = COMPUTE_CLUSTER
 pc.component_id = COMPUTE_NODE_ID
@@ -69,15 +68,15 @@ pc.addService(pg.Execute(shell='sh', command='/usr/bin/sudo /local/repository/fa
 pc_if = pc.addInterface('pc_if', pg.IPv4Address('192.168.1.1', '255.255.255.0'))
 pc_if.bandwidth = 4e7
 
-# Request a mMIMO Base Station (BS), name it "mm", and create & assign 3 interfaces to it for connections to the
-#   Radio Heads (RHs) in the enclosure
+# Request a mMIMO Base Station (BS), name it "mm", and create 3 interfaces to it for connections to the
+#   Radio Heads (RHs) in the enclosure via LAN (for control & aggregation)
 mm = request.RawPC('mm')
 mm.hardware_type = MASSIVE_MIMO_BS_RADIO_HW_TYPE
 mm_if1 = mm.addInterface('mm_if1')
 mm_if2 = mm.addInterface('mm_if2')
 mm_if3 = mm.addInterface('mm_if3')
 
-# Request 'X' Iris clients, name them "irx", and create & assign interfaces for connections to their compute nodes
+# Request 'X' Iris clients with names "irx", and create interfaces for LAN connections (remoting & control)
 ir1 = request.RawPC('ir1')
 ir1.hardware_type = MASSIVE_MIMO_CLIENT_RADIO_HW_TYPE
 ir1.component_id = 'iris03'
