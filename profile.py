@@ -4,7 +4,7 @@ Resource provisioning script for mMIMO experiments on the POWDER test-bed for Pr
 Instructions:
 The Faros hub and pc are connected via a private 10Gbps link.
 All Iris radios and the Faros hub should come up with address between 192.168.1.101 and 192.168.1.200.
-These addresses are reachable by first logging in to "pc1".
+These addresses are reachable by first logging in to "pc".
 
 Repository: https://gitlab.flux.utah.edu/kwebb/faros-simple.git
 
